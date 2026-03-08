@@ -1,8 +1,10 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const chokidar = require('chokidar');
 
 let mainWindow;
+let watcher = null;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -55,6 +57,15 @@ ipcMain.handle('open-folder', async () => {
 ipcMain.handle('read-file', async (_event, filePath) => {
   const content = fs.readFileSync(filePath, 'utf-8');
   return { filePath, content };
+});
+
+ipcMain.handle('watch-file', (_event, filePath) => {
+  if (watcher) watcher.close();
+  watcher = chokidar.watch(filePath, { ignoreInitial: true });
+  watcher.on('change', () => {
+    const content = fs.readFileSync(filePath, 'utf-8');
+    mainWindow.webContents.send('file-changed', { filePath, content });
+  });
 });
 
 app.whenReady().then(createWindow);
