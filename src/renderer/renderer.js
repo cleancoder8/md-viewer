@@ -62,3 +62,23 @@ document.getElementById('file-tree').addEventListener('click', async (e) => {
   document.querySelectorAll('#file-tree li.active').forEach((el) => el.classList.remove('active'));
   li.classList.add('active');
 });
+
+const themeBtn = document.getElementById('btn-theme');
+const hljsThemeLink = document.getElementById('hljs-theme');
+
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  themeBtn.textContent = theme === 'dark' ? 'Light Mode' : 'Dark Mode';
+  hljsThemeLink.href = theme === 'dark'
+    ? '../../node_modules/highlight.js/styles/github-dark.css'
+    : '../../node_modules/highlight.js/styles/github.css';
+  localStorage.setItem('theme', theme);
+}
+
+// Load saved theme on startup
+applyTheme(localStorage.getItem('theme') || 'light');
+
+themeBtn.addEventListener('click', () => {
+  const current = document.documentElement.dataset.theme;
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+});
