@@ -1,32 +1,32 @@
 const path = require('path');
 
 function buildFileTree(filePaths, rootDir) {
-  const tree = [];
-  const dirMap = new Map();
+  const root = { children: [] };
 
   for (const filePath of filePaths) {
-    const rel = path.relative(rootDir, filePath);
-    const parts = rel.split(path.sep);
+    const rel = require('path').relative(rootDir, filePath);
+    const parts = rel.split(require('path').sep);
+    let current = root;
 
-    if (parts.length === 1) {
-      tree.push({ name: parts[0], path: filePath, children: null });
-    } else {
-      const dirName = parts[0];
-      const dirPath = path.join(rootDir, dirName);
-      if (!dirMap.has(dirName)) {
-        const node = { name: dirName, path: dirPath, children: [] };
-        dirMap.set(dirName, node);
-        tree.push(node);
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i];
+      const isFile = i === parts.length - 1;
+
+      if (isFile) {
+        current.children.push({ name: part, path: filePath, children: null });
+      } else {
+        let dir = current.children.find((n) => n.name === part && n.children);
+        if (!dir) {
+          const dirPath = require('path').join(rootDir, parts.slice(0, i + 1).join(require('path').sep));
+          dir = { name: part, path: dirPath, children: [] };
+          current.children.push(dir);
+        }
+        current = dir;
       }
-      dirMap.get(dirName).children.push({
-        name: parts.slice(1).join(path.sep),
-        path: filePath,
-        children: null,
-      });
     }
   }
 
-  return tree;
+  return root.children;
 }
 
 function renderFileTree(nodes) {

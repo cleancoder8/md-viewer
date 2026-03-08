@@ -5,5 +5,8 @@ contextBridge.exposeInMainWorld('api', {
   openFolder: () => ipcRenderer.invoke('open-folder'),
   readFile: (filePath) => ipcRenderer.invoke('read-file', filePath),
   watchFile: (filePath) => ipcRenderer.invoke('watch-file', filePath),
-  onFileChanged: (callback) => ipcRenderer.on('file-changed', (_event, data) => callback(data)),
+  onFileChanged: (callback) => {
+    ipcRenderer.removeAllListeners('file-changed');
+    ipcRenderer.on('file-changed', (_event, data) => callback(data));
+  },
 });

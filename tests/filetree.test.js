@@ -22,6 +22,24 @@ test('builds nested tree with folder', () => {
   ]);
 });
 
+test('builds 2-level nested tree', () => {
+  const paths = ['/root/docs/api/ref.md'];
+  const tree = buildFileTree(paths, '/root');
+  expect(tree).toEqual([
+    {
+      name: 'docs',
+      path: '/root/docs',
+      children: [
+        {
+          name: 'api',
+          path: '/root/docs/api',
+          children: [{ name: 'ref.md', path: '/root/docs/api/ref.md', children: null }],
+        },
+      ],
+    },
+  ]);
+});
+
 test('renderFileTree returns HTML string', () => {
   const tree = [{ name: 'a.md', path: '/root/a.md', children: null }];
   const html = renderFileTree(tree);

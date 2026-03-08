@@ -2,6 +2,14 @@ const { renderMarkdown } = require('./markdown');
 const { extractTOC } = require('./toc');
 const { buildFileTree, renderFileTree } = require('./filetree');
 
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 let currentContent = '';
 let currentFilePath = null;
 
@@ -107,14 +115,14 @@ searchInput.addEventListener('input', async () => {
     searchResultsEl.innerHTML = results
       .map((r) =>
         `<div><strong data-path="${r.path}" class="search-file-link">${r.path.split('/').pop()}</strong>: ${
-          r.matches.map((m) => `<span>L${m.line}: ${m.text}</span>`).join(', ')
+          r.matches.map((m) => `<span>L${m.line}: ${escapeHtml(m.text)}</span>`).join(', ')
         }</div>`
       )
       .join('') || '<em>No results</em>';
   } else if (currentContent) {
     const matches = searchContent(currentContent, query);
     searchResultsEl.innerHTML = matches
-      .map((m) => `<div>L${m.line}: ${m.text}</div>`)
+      .map((m) => `<div>L${m.line}: ${escapeHtml(m.text)}</div>`)
       .join('') || '<em>No results</em>';
   }
 });

@@ -12,6 +12,7 @@ function createWindow() {
     height: 800,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: false,
       contextIsolation: true,
     },
   });
@@ -66,6 +67,10 @@ ipcMain.handle('watch-file', (_event, filePath) => {
     const content = fs.readFileSync(filePath, 'utf-8');
     mainWindow.webContents.send('file-changed', { filePath, content });
   });
+});
+
+app.on('before-quit', () => {
+  if (watcher) watcher.close();
 });
 
 app.whenReady().then(createWindow);

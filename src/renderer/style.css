@@ -134,5 +134,4 @@ body {
 #file-tree li:hover { background: var(--border); }
 #file-tree li.active { font-weight: bold; }
 
-/* Syntax highlighting overrides for dark mode */
-[data-theme="dark"] #hljs-theme { display: none; }
+/* Syntax highlighting theme is switched via JS (applyTheme) */
