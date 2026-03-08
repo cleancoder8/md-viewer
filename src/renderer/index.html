@@ -1,33 +1,166 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <title>md-viewer</title>
-  <link rel="stylesheet" href="../../node_modules/highlight.js/styles/github.css" id="hljs-theme" />
+  <link rel="stylesheet" href="../../node_modules/highlight.js/styles/github-dark.css" id="hljs-theme" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="toolbar">
-    <button id="btn-open-file">Open File</button>
-    <button id="btn-open-folder">Open Folder</button>
-    <button id="btn-theme">Dark Mode</button>
-  </div>
-  <div id="app">
-    <aside id="sidebar" class="hidden">
-      <div id="file-tree"></div>
-    </aside>
-    <main id="content-area">
-      <div id="content"></div>
-      <div id="toc-panel">
-        <div id="toc-header">Table of Contents</div>
+  <div id="workbench">
+
+    <!-- Activity Bar -->
+    <div id="activity-bar">
+      <div id="activity-top">
+        <button class="activity-btn active" data-panel="explorer" title="Explorer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/>
+          </svg>
+        </button>
+        <button class="activity-btn" data-panel="search" title="Search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+        </button>
+        <button class="activity-btn" data-panel="outline" title="Outline">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 5h18M3 10h12M3 15h15M3 20h9"/>
+          </svg>
+        </button>
+      </div>
+      <div id="activity-bottom">
+        <button class="activity-btn" id="btn-theme" title="Toggle Theme">
+          <svg id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
+          </svg>
+          <svg id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Side Panel -->
+    <div id="side-panel">
+
+      <!-- Explorer Panel -->
+      <div class="panel active" id="panel-explorer">
+        <div class="panel-header">
+          <span class="panel-title">EXPLORER</span>
+          <div class="panel-header-actions">
+            <button id="btn-open-file" class="icon-btn" title="Open File">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14,2 14,8 20,8"/>
+                <line x1="12" y1="18" x2="12" y2="12"/>
+                <line x1="9" y1="15" x2="15" y2="15"/>
+              </svg>
+            </button>
+            <button id="btn-open-folder" class="icon-btn" title="Open Folder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div id="file-tree"></div>
+      </div>
+
+      <!-- Search Panel -->
+      <div class="panel" id="panel-search">
+        <div class="panel-header">
+          <span class="panel-title">SEARCH</span>
+        </div>
+        <div class="search-box">
+          <div class="search-input-wrap">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input id="search-input" type="text" placeholder="Search" spellcheck="false" />
+          </div>
+        </div>
+        <div id="search-results"></div>
+      </div>
+
+      <!-- Outline Panel -->
+      <div class="panel" id="panel-outline">
+        <div class="panel-header">
+          <span class="panel-title">OUTLINE</span>
+        </div>
         <div id="toc"></div>
       </div>
-    </main>
+
+    </div>
+
+    <!-- Editor Area -->
+    <div id="editor-area">
+      <div id="tab-bar">
+        <div id="current-tab" class="tab active">
+          <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14,2 14,8 20,8"/>
+          </svg>
+          <span id="tab-filename">Welcome</span>
+        </div>
+      </div>
+      <div id="breadcrumb">
+        <span id="breadcrumb-path"></span>
+      </div>
+      <div id="content-wrap">
+        <div id="content">
+          <div id="welcome">
+            <div class="welcome-icon">
+              <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="8" y="16" width="64" height="4" rx="2" fill="currentColor" opacity="0.5"/>
+                <rect x="8" y="26" width="44" height="3" rx="1.5" fill="currentColor" opacity="0.35"/>
+                <rect x="8" y="35" width="56" height="3" rx="1.5" fill="currentColor" opacity="0.35"/>
+                <rect x="8" y="46" width="36" height="2.5" rx="1.25" fill="currentColor" opacity="0.25"/>
+                <rect x="8" y="54" width="48" height="2.5" rx="1.25" fill="currentColor" opacity="0.25"/>
+                <rect x="8" y="62" width="28" height="2.5" rx="1.25" fill="currentColor" opacity="0.25"/>
+              </svg>
+            </div>
+            <h1>md-viewer</h1>
+            <p>A fast, lightweight Markdown reader</p>
+            <div class="welcome-btns">
+              <button onclick="document.getElementById('btn-open-file').click()">
+                <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14">
+                  <path d="M9.5 1.1l3.4 3.5.1.4v2h-1V5H8V1H3v14h4v1H2.5l-.5-.5v-15l.5-.5h6.7l.3.1zM9 5h2.9L9 2.1V5zm4 8h-1v-2H9v-1h3V8l2 2.5L14 13z"/>
+                </svg>
+                Open File
+              </button>
+              <button onclick="document.getElementById('btn-open-folder').click()">
+                <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14">
+                  <path d="M14.5 3H7.71l-.85-.85L6.51 2h-5l-.5.5v11l.5.5h13l.5-.5v-10L14.5 3zm-.5 10H2V3h4.29l.85.85.36.15H14v1H2v1h12v7z"/>
+                </svg>
+                Open Folder
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
-  <div id="search-bar">
-    <input id="search-input" type="text" placeholder="Search..." />
-    <div id="search-results"></div>
+
+  <!-- Status Bar -->
+  <div id="status-bar">
+    <div id="status-left">
+      <span class="status-item status-branch">
+        <svg viewBox="0 0 16 16" fill="currentColor" width="12" height="12" style="margin-right:4px">
+          <path d="M6 3.5a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0zm2.5-1.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-6 8a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0zM5 10a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm.5-5a.5.5 0 0 1 .5.5v3.5h1a.5.5 0 0 1 0 1h-1.5a.5.5 0 0 1-.5-.5v-4a.5.5 0 0 1 .5-.5z"/>
+        </svg>
+        md-viewer
+      </span>
+    </div>
+    <div id="status-right">
+      <span class="status-item" id="status-file"></span>
+      <span class="status-item">Markdown</span>
+      <span class="status-item">UTF-8</span>
+    </div>
   </div>
+
   <script src="renderer.js"></script>
 </body>
 </html>

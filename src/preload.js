@@ -1,6 +1,6 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { ipcRenderer } = require('electron');
 
-contextBridge.exposeInMainWorld('api', {
+window.api = {
   openFile: () => ipcRenderer.invoke('open-file'),
   openFolder: () => ipcRenderer.invoke('open-folder'),
   readFile: (filePath) => ipcRenderer.invoke('read-file', filePath),
@@ -9,4 +9,4 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.removeAllListeners('file-changed');
     ipcRenderer.on('file-changed', (_event, data) => callback(data));
   },
-});
+};
