@@ -1,12 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <title>md-viewer</title>
+  <link rel="stylesheet" href="../../node_modules/highlight.js/styles/github.css" id="hljs-theme" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <p>md-viewer</p>
+  <div id="toolbar">
+    <button id="btn-open-file">Open File</button>
+    <button id="btn-open-folder">Open Folder</button>
+    <button id="btn-theme">Dark Mode</button>
+  </div>
+  <div id="app">
+    <aside id="sidebar" class="hidden">
+      <div id="file-tree"></div>
+    </aside>
+    <main id="content-area">
+      <div id="content"></div>
+      <div id="toc-panel">
+        <div id="toc-header">Table of Contents</div>
+        <div id="toc"></div>
+      </div>
+    </main>
+  </div>
+  <div id="search-bar">
+    <input id="search-input" type="text" placeholder="Search..." />
+    <div id="search-results"></div>
+  </div>
   <script src="renderer.js"></script>
 </body>
 </html>
