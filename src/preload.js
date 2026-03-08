@@ -1,3 +1,5 @@
-const { contextBridge } = require('electron');
-// IPC bindings added in later tasks
-contextBridge.exposeInMainWorld('api', {});
+const { contextBridge, ipcRenderer } = require('electron');
+
+contextBridge.exposeInMainWorld('api', {
+  openFile: () => ipcRenderer.invoke('open-file'),
+});
