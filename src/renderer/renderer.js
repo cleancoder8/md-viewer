@@ -82,3 +82,48 @@ themeBtn.addEventListener('click', () => {
   const current = document.documentElement.dataset.theme;
   applyTheme(current === 'dark' ? 'light' : 'dark');
 });
+
+const { searchContent, searchFiles } = require('./search');
+
+const searchInput = document.getElementById('search-input');
+const searchResultsEl = document.getElementById('search-results');
+
+searchInput.addEventListener('input', async () => {
+  const query = searchInput.value.trim();
+  if (!query) {
+    searchResultsEl.innerHTML = '';
+    return;
+  }
+
+  if (currentFolder && folderFiles.length > 0) {
+    // Load contents of all files we haven't read yet
+    for (const f of folderFiles) {
+      if (f.content === null) {
+        const res = await window.api.readFile(f.path);
+        f.content = res.content;
+      }
+    }
+    const results = searchFiles(folderFiles, query);
+    searchResultsEl.innerHTML = results
+      .map((r) =>
+        `<div><strong data-path="${r.path}" class="search-file-link">${r.path.split('/').pop()}</strong>: ${
+          r.matches.map((m) => `<span>L${m.line}: ${m.text}</span>`).join(', ')
+        }</div>`
+      )
+      .join('') || '<em>No results</em>';
+  } else if (currentContent) {
+    const matches = searchContent(currentContent, query);
+    searchResultsEl.innerHTML = matches
+      .map((m) => `<div>L${m.line}: ${m.text}</div>`)
+      .join('') || '<em>No results</em>';
+  }
+});
+
+// Click search result file to open it
+searchResultsEl.addEventListener('click', async (e) => {
+  const link = e.target.closest('.search-file-link');
+  if (!link) return;
+  const filePath = link.dataset.path;
+  const result = await window.api.readFile(filePath);
+  renderAndDisplay(result.content, result.filePath);
+});
